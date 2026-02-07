@@ -1,4 +1,4 @@
-# baseURL will be set automatically by GitHub Actions
+# baseURL will be overridden by GitHub Actions for production
 # For local development: baseURL = 'http://localhost:1313'
 # For GitHub Pages: baseURL = 'https://homebysix.github.io/macadmins-calendar'
 baseURL = 'http://localhost:1313'
