@@ -1,0 +1,80 @@
+<style>
+:root {
+    --highlight-color: {{ .Site.Params.highlightColor | default "#007bff" }};
+    --highlight-hover: {{ .Site.Params.highlightHover | default "#0056b3" }};
+    --highlight-light: {{ .Site.Params.highlightLight | default "#d4edda" }};
+    --highlight-text: {{ .Site.Params.highlightText | default "#155724" }};
+}
+
+/* Override static colors with dynamic ones */
+.btn-primary {
+    background: var(--highlight-color);
+}
+
+.btn-primary:hover {
+    background: var(--highlight-hover);
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--highlight-color);
+}
+
+.event-date {
+    color: var(--highlight-color);
+}
+
+.event-main h3 a:hover {
+    color: var(--highlight-color);
+}
+
+.event-card h3 a:hover {
+    color: var(--highlight-color);
+}
+
+.event-link {
+    color: var(--highlight-color);
+}
+
+.archive-link {
+    color: var(--highlight-color);
+}
+
+.footer a {
+    color: var(--highlight-color);
+}
+
+.events-section h2 {
+    border-bottom-color: var(--highlight-color);
+}
+
+.upcoming-section h2 {
+    border-bottom-color: #28a745;
+}
+
+.recent-section h2 {
+    border-bottom-color: #6c757d;
+}
+
+.filter-btn {
+    border-color: var(--highlight-color);
+    color: var(--highlight-color);
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+    background: var(--highlight-color);
+}
+
+.calendar-header {
+    background: var(--highlight-color);
+}
+
+.calendar-event {
+    background: var(--highlight-color);
+}
+
+.calendar-event:hover {
+    background: var(--highlight-hover);
+}
+</style>
