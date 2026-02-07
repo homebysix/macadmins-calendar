@@ -5,6 +5,7 @@ baseURL = 'http://localhost:1313'
 languageCode = 'en-us'
 title = 'Mac Admin Conferences Calendar'
 theme = 'macadmin-calendar'
+canonifyURLs = true
 
 [params]
   description = 'A comprehensive calendar of Mac Admin conferences, meetups, and events worldwide'
