@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode | default "en-us" }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ .Title }} | {{ .Site.Title }}</title>
+    <meta name="description" content="{{ .Site.Params.description }}">
+    <link rel="stylesheet" href="{{ "/css/style.css" | absURL }}">
+    {{ partial "dynamic-css.html" . }}
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <h1><a href="{{ "/" | absURL }}">{{ .Site.Title }}</a></h1>
+            <ul>
+                {{ range .Site.Menus.main }}
+                <li><a href="{{ .URL | absURL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
+                {{ end }}
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <footer>
+        <p>&copy; {{ now.Year }} {{ .Site.Params.author }}. Built with <a href="https://gohugo.io">Hugo</a>.</p>
+        <p>Community contributions welcome on <a href="https://github.com/homebysix/macadmins-calendar">GitHub</a>.</p>
+    </footer>
+</body>
+</html>

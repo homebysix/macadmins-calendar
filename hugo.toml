@@ -1,0 +1,35 @@
+# baseURL will be set automatically by GitHub Actions
+# For local development: baseURL = 'http://localhost:1313'
+# For GitHub Pages: baseURL = 'https://homebysix.github.io/macadmins-calendar'
+baseURL = 'http://localhost:1313'
+languageCode = 'en-us'
+title = 'Mac Admin Conferences Calendar'
+theme = 'macadmin-calendar'
+
+[params]
+  description = 'A comprehensive calendar of Mac Admin conferences, meetups, and events worldwide'
+  author = 'Elliot Jordan'
+  highlightColor = '#007bff'
+  highlightHover = '#0056b3'
+  highlightLight = '#d4edda'
+  highlightText = '#155724'
+
+[[menu.main]]
+  name = 'Events List'
+  url = '/events/'
+  weight = 10
+
+[[menu.main]]
+  name = 'Calendar'
+  url = '/calendar/'
+  weight = 20
+
+[[menu.main]]
+  name = 'About'
+  url = '/about/'
+  weight = 30
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

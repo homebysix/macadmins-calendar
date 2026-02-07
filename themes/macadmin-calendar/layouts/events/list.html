@@ -1,0 +1,13 @@
+{{ define "main" }}
+<div class="events-page">
+    <h1>{{ .Title }}</h1>
+    <p>{{ .Content }}</p>
+
+    {{ $events := .Site.Data.events.events }}
+    {{ $sortedEvents := sort $events "start_date" "desc" }}
+    
+    {{ partial "event-list.html" (dict "events" $sortedEvents "showFilters" true) }}
+</div>
+
+{{ partial "event-filters.html" }}
+{{ end }}

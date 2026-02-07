@@ -1,0 +1,63 @@
+{{/*
+  Partial: event-list.html
+  Parameters:
+  - events: list of events to display
+  - title: section title (optional)
+  - showFilters: boolean to show filter controls (default: false)
+  - class: additional CSS class for the container (optional)
+*/}}
+
+{{ $events := .events }}
+{{ $title := .title }}
+{{ $showFilters := .showFilters | default false }}
+{{ $class := .class | default "" }}
+
+{{ if $showFilters }}
+<div class="filter-controls">
+    <button class="filter-btn active" data-filter="all">All Events</button>
+    <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+    <button class="filter-btn" data-filter="past">Past</button>
+</div>
+{{ end }}
+
+{{ if $title }}
+<section class="events-section {{ $class }}">
+    <h2>{{ $title }}</h2>
+{{ else }}
+<section class="events-section {{ $class }}">
+{{ end }}
+    <div class="events-list">
+        {{ range $events }}
+        {{ $eventEndDate := .end_date | default .start_date }}
+        {{ $eventEndDateTime := printf "%sT23:59:59Z" $eventEndDate }}
+        {{ $isUpcoming := ge (time $eventEndDateTime) now }}
+        {{ $status := cond $isUpcoming "upcoming" "past" }}
+        <div class="event-item {{ $status }}" data-status="{{ $status }}">
+            <div class="event-main">
+                <h3>
+                    <a href="{{ .website }}" target="_blank">
+                        {{ if .full_name }}{{ .full_name }}{{ else }}{{ .name }}{{ end }}
+                        {{ if .full_name }}<br><small>({{ .name }})</small>{{ end }}
+                    </a>
+                </h3>
+                <div class="event-meta">
+                    <span class="event-date">
+                        📅 {{ dateFormat "January 2" .start_date }}{{ if ne .start_date .end_date }} - {{ dateFormat "January 2, 2006" .end_date }}{{ else }}, {{ dateFormat "2006" .start_date }}{{ end }}
+                    </span>
+                    <span class="event-location">📍 {{ .location }}</span>
+                    <span class="event-type-badge {{ $status }}">🏷️ {{ title .type }}</span>
+                </div>
+                {{ if .language }}
+                {{ $languageName := index $.Site.Data.languages.languages .language | default .language }}
+                <div class="event-language">🌐 Language: {{ $languageName }}</div>
+                {{ end }}
+            </div>
+            <div class="event-links">
+                <a href="{{ .website }}" target="_blank" class="event-link">🌐 Website</a>
+                {{ if .videos }}<a href="{{ .videos }}" target="_blank" class="event-link">📹 Videos</a>{{ end }}
+                {{ if .archive }}<a href="{{ .archive }}" target="_blank" class="event-link">📚 Archive</a>{{ end }}
+            </div>
+        </div>
+        {{ end }}
+    </div>
+</section>

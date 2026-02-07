@@ -1,0 +1,44 @@
+{{ define "main" }}
+<div class="homepage">
+    <div class="page-header">
+        <h1>{{ .Site.Title }}</h1>
+        <p>{{ .Site.Params.description }}</p>
+        <div class="quick-nav">
+            <a href="/events/" class="btn btn-primary">View All Events</a>
+            <a href="/calendar/" class="btn btn-primary">View Calendar</a>
+            <a href="/about/" class="btn btn-primary">About This Project</a>
+        </div>
+    </div>
+
+    {{ $allEvents := .Site.Data.events.events }}
+    {{ $upcomingEvents := slice }}
+    {{ $pastEvents := slice }}
+    {{ range $allEvents }}
+        {{ $eventEndDate := .end_date | default .start_date }}
+        {{ $eventEndDateTime := printf "%sT23:59:59Z" $eventEndDate }}
+        {{ $isUpcoming := ge (time $eventEndDateTime) now }}
+        {{ if $isUpcoming }}
+            {{ $upcomingEvents = $upcomingEvents | append . }}
+        {{ else }}
+            {{ $pastEvents = $pastEvents | append . }}
+        {{ end }}
+    {{ end }}
+    {{ $sortedUpcoming := sort $upcomingEvents "start_date" "asc" }}
+    {{ $sortedPast := sort $pastEvents "start_date" "desc" }}
+    {{ $limitedUpcoming := first 10 $sortedUpcoming }}
+    {{ $limitedPast := first 5 $sortedPast }}
+
+    {{ if gt (len $limitedUpcoming) 0 }}
+    {{ partial "event-list.html" (dict "events" $limitedUpcoming "title" "Upcoming Events" "class" "upcoming-section") }}
+    {{ end }}
+
+    {{ if gt (len $limitedPast) 0 }}
+    {{ partial "event-list.html" (dict "events" $limitedPast "title" "Recent Events" "class" "recent-section") }}
+    {{ end }}
+
+
+    <div class="view-all-section">
+        <a href="/events/" class="btn btn-primary btn-large">View All Events</a>
+    </div>
+</div>
+{{ end }}

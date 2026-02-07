@@ -1,0 +1,27 @@
+{{/* Partial: event-filters.html - JavaScript for event filtering */}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const eventItems = document.querySelectorAll('.event-item');
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Remove active class from all buttons
+            filterBtns.forEach(b => b.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+
+            const filter = this.dataset.filter;
+
+            // Show/hide events based on filter
+            eventItems.forEach(item => {
+                if (filter === 'all' || item.dataset.status === filter) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
