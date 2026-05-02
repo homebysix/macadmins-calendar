@@ -2,3 +2,6 @@ public/
 site/
 build/
 .vscode/
+.hugo_build.lock
+*.local.json
+*.local.md
