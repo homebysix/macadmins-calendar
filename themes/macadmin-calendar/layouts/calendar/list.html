@@ -41,14 +41,32 @@ const events = [
     {{ end }}
 ];
 
-let currentDate = new Date();
+const DAY_MS = 86400000;
+
+function parseDate(s) {
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, m - 1, d);
+}
+
+function atMidnight(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
 const today = new Date();
+const todayStart = atMidnight(today);
+let currentDate = new Date();
+
+const parsedEvents = events.map(e => ({
+    data: e,
+    start: parseDate(e.start_date),
+    end: parseDate(e.end_date),
+}));
 
 function renderCalendar(year, month) {
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
+    const firstOfMonth = new Date(year, month, 1);
+    const lastOfMonth = new Date(year, month + 1, 0);
+    const gridStart = new Date(firstOfMonth);
+    gridStart.setDate(gridStart.getDate() - firstOfMonth.getDay());
 
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
@@ -61,52 +79,105 @@ function renderCalendar(year, month) {
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
 
-    const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    dayHeaders.forEach(day => {
+    const headers = document.createElement('div');
+    headers.className = 'calendar-headers';
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
         const header = document.createElement('div');
         header.className = 'calendar-day-header';
         header.textContent = day;
-        grid.appendChild(header);
+        headers.appendChild(header);
+    });
+    grid.appendChild(headers);
+
+    const cursor = new Date(gridStart);
+    while (cursor <= lastOfMonth || cursor.getDay() !== 0) {
+        grid.appendChild(buildWeek(new Date(cursor), month));
+        cursor.setDate(cursor.getDate() + 7);
+    }
+}
+
+function buildWeek(weekStart, displayedMonth) {
+    const weekEl = document.createElement('div');
+    weekEl.className = 'calendar-week';
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+
+    const weekEvents = parsedEvents.filter(pe => pe.end >= weekStart && pe.start <= weekEnd);
+
+    for (let i = 0; i < 7; i++) {
+        const day = new Date(weekStart);
+        day.setDate(day.getDate() + i);
+        weekEl.appendChild(buildDayCell(day, displayedMonth, weekEvents));
+    }
+
+    weekEl.appendChild(buildBarsLayer(weekStart, weekEnd, weekEvents));
+    return weekEl;
+}
+
+function buildDayCell(day, displayedMonth, weekEvents) {
+    const cell = document.createElement('div');
+    cell.className = 'calendar-day';
+    if (day.getMonth() !== displayedMonth) cell.classList.add('other-month');
+
+    const dayNumber = document.createElement('div');
+    dayNumber.className = 'day-number';
+    dayNumber.textContent = day.getDate();
+    cell.appendChild(dayNumber);
+
+    weekEvents.forEach(pe => {
+        if (day >= pe.start && day <= pe.end) {
+            cell.appendChild(buildEventButton(pe, 'mobile-pill'));
+        }
     });
 
-    const current = new Date(startDate);
-    while (current <= lastDay || current.getDay() !== 0) {
-        const dayDiv = document.createElement('div');
-        dayDiv.className = 'calendar-day';
-        if (current.getMonth() !== month) {
-            dayDiv.classList.add('other-month');
-        }
+    return cell;
+}
 
-        const dayNumber = document.createElement('div');
-        dayNumber.className = 'day-number';
-        dayNumber.textContent = current.getDate();
-        dayDiv.appendChild(dayNumber);
+function buildBarsLayer(weekStart, weekEnd, weekEvents) {
+    const layer = document.createElement('div');
+    layer.className = 'calendar-week-bars';
 
-        const dayEvents = events.filter(event => {
-            const eventStart = new Date(event.start_date + 'T00:00:00');
-            const eventEnd = new Date(event.end_date + 'T23:59:59');
-            const currentDay = new Date(current.getFullYear(), current.getMonth(), current.getDate());
-            return currentDay >= new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate()) &&
-                   currentDay <= new Date(eventEnd.getFullYear(), eventEnd.getMonth(), eventEnd.getDate());
-        });
+    const entries = weekEvents.map(pe => {
+        const clippedStart = pe.start < weekStart ? weekStart : pe.start;
+        const clippedEnd = pe.end > weekEnd ? weekEnd : pe.end;
+        return {
+            pe,
+            startCol: clippedStart.getDay() + 1,
+            span: Math.round((clippedEnd - clippedStart) / DAY_MS) + 1,
+        };
+    });
 
-        dayEvents.forEach(event => {
-            const eventEndDate = new Date(event.end_date + 'T23:59:59');
-            const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            const isUpcoming = eventEndDate >= todayStart;
-            const status = isUpcoming ? 'upcoming' : 'past';
-            const eventBtn = document.createElement('button');
-            eventBtn.type = 'button';
-            eventBtn.className = `calendar-event ${status}`;
-            eventBtn.textContent = event.name;
-            eventBtn.setAttribute('aria-label', `${isUpcoming ? 'Upcoming' : 'Past'}: ${event.full_name || event.name}, ${event.location}`);
-            eventBtn.addEventListener('click', () => showEventDetails(event));
-            dayDiv.appendChild(eventBtn);
-        });
+    entries.sort((a, b) => a.startCol - b.startCol || b.span - a.span);
 
-        grid.appendChild(dayDiv);
-        current.setDate(current.getDate() + 1);
-    }
+    const laneEnds = [];
+    entries.forEach(entry => {
+        let lane = 0;
+        while (lane < laneEnds.length && laneEnds[lane] >= entry.startCol) lane++;
+        laneEnds[lane] = entry.startCol + entry.span - 1;
+
+        const bar = buildEventButton(entry.pe, 'calendar-event-bar');
+        bar.style.setProperty('--start', entry.startCol);
+        bar.style.setProperty('--span', entry.span);
+        bar.style.setProperty('--lane', lane);
+        layer.appendChild(bar);
+    });
+
+    return layer;
+}
+
+function buildEventButton(pe, modifier) {
+    const event = pe.data;
+    const isUpcoming = pe.end >= todayStart;
+    const status = isUpcoming ? 'upcoming' : 'past';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `calendar-event ${modifier} ${status}`;
+    if (pe.end > pe.start) btn.classList.add('multi-day');
+    btn.textContent = event.name;
+    btn.setAttribute('aria-label', `${isUpcoming ? 'Upcoming' : 'Past'}: ${event.full_name || event.name}, ${event.location}`);
+    btn.addEventListener('click', () => showEventDetails(event));
+    return btn;
 }
 
 function escapeHtml(s) {
@@ -117,8 +188,8 @@ function showEventDetails(event) {
     const details = document.getElementById('eventDetails');
     const content = document.getElementById('eventContent');
 
-    const startDate = new Date(event.start_date);
-    const endDate = new Date(event.end_date);
+    const startDate = parseDate(event.start_date);
+    const endDate = parseDate(event.end_date);
     const dateStr = startDate.toDateString() === endDate.toDateString()
         ? startDate.toLocaleDateString()
         : `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;

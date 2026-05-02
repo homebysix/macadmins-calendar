@@ -753,6 +753,12 @@ main {
 }
 
 .calendar-grid {
+    --bar-row-height: 1.55rem;
+    --bar-top-offset: 1.9rem;
+    --bar-gap: 2px;
+}
+
+.calendar-headers {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
 }
@@ -766,12 +772,17 @@ main {
     border-bottom: 1px solid var(--border-subtle);
 }
 
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    position: relative;
+}
+
 .calendar-day {
     min-height: 120px;
     padding: 0.5rem;
     border-bottom: 1px solid var(--border-subtle);
     border-right: 1px solid var(--border-subtle);
-    position: relative;
     background: var(--bg-surface);
 }
 
@@ -808,6 +819,7 @@ main {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    box-sizing: border-box;
 }
 
 .calendar-event:hover,
@@ -831,6 +843,32 @@ main {
 
 .calendar-event.past:hover {
     background: var(--past-bg-hover);
+}
+
+.calendar-week-bars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: none;
+}
+
+.calendar-event-bar {
+    position: absolute;
+    pointer-events: auto;
+    margin: 0;
+    left: calc((var(--start) - 1) * (100% / 7) + var(--bar-gap));
+    width: calc(var(--span) * (100% / 7) - 2 * var(--bar-gap));
+    top: calc(var(--bar-top-offset) + var(--lane) * var(--bar-row-height));
+}
+
+@media (min-width: 601px) {
+    .calendar-week-bars {
+        display: block;
+    }
+
+    .calendar-event.mobile-pill {
+        display: none;
+    }
 }
 
 .selected-event-details {
