@@ -62,6 +62,8 @@ Events that will not be a good fit include:
 
 4. Submit a pull request
 
+Pull requests are automatically validated for required fields, date format, and `end_date >= start_date`. To check locally, run `python scripts/validate_events.py` (or use [pre-commit](https://pre-commit.com)).
+
 ### Event Fields
 
 - **name**: Conference/event name (required)
