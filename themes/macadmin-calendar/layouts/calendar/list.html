@@ -56,7 +56,7 @@ function renderCalendar(year, month) {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    document.getElementById('currentMonth').textContent = 
+    document.getElementById('currentMonth').textContent =
         `${monthNames[month]} ${year}`;
 
     const grid = document.getElementById('calendarGrid');
@@ -90,7 +90,7 @@ function renderCalendar(year, month) {
             const eventStart = new Date(event.start_date + 'T00:00:00');
             const eventEnd = new Date(event.end_date + 'T23:59:59');
             const currentDay = new Date(current.getFullYear(), current.getMonth(), current.getDate());
-            return currentDay >= new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate()) && 
+            return currentDay >= new Date(eventStart.getFullYear(), eventStart.getMonth(), eventStart.getDate()) &&
                    currentDay <= new Date(eventEnd.getFullYear(), eventEnd.getMonth(), eventEnd.getDate());
         });
 
@@ -115,16 +115,16 @@ function renderCalendar(year, month) {
 function showEventDetails(event) {
     const details = document.getElementById('eventDetails');
     const content = document.getElementById('eventContent');
-    
+
     const startDate = new Date(event.start_date);
     const endDate = new Date(event.end_date);
-    const dateStr = startDate.toDateString() === endDate.toDateString() 
+    const dateStr = startDate.toDateString() === endDate.toDateString()
         ? startDate.toLocaleDateString()
         : `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
-    
-    const titleContent = event.full_name && event.full_name !== event.name ? 
+
+    const titleContent = event.full_name && event.full_name !== event.name ?
         `${event.full_name}<br><small>(${event.name})</small>` : event.name;
-    
+
     content.innerHTML = `
         <h4><a href="${event.website}" target="_blank">${titleContent}</a></h4>
         <p><strong>📅 Date:</strong> ${dateStr}</p>
@@ -136,7 +136,7 @@ function showEventDetails(event) {
             ${event.archive ? `<a href="${event.archive}" target="_blank" class="btn btn-secondary">📚 Archive</a>` : ''}
         </div>
     `;
-    
+
     details.style.display = 'block';
     details.scrollIntoView({ behavior: 'smooth' });
 }
@@ -325,26 +325,26 @@ renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
         gap: 1rem;
         text-align: center;
     }
-    
+
     .calendar-controls h2 {
         order: -1;
     }
-    
+
     .calendar-nav {
         justify-content: center;
         flex-wrap: wrap;
     }
-    
+
     .calendar-day {
         min-height: 80px;
         padding: 0.25rem;
     }
-    
+
     .calendar-event {
         font-size: 0.6rem;
         padding: 0.2rem 0.3rem;
     }
-    
+
     .day-number {
         font-size: 0.8rem;
     }
