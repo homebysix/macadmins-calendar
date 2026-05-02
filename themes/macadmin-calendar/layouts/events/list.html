@@ -5,7 +5,7 @@
 
     {{ $events := .Site.Data.events.events }}
     {{ $sortedEvents := sort $events "start_date" "desc" }}
-    
+
     {{ partial "event-list.html" (dict "events" $sortedEvents "showFilters" true) }}
 </div>
 
