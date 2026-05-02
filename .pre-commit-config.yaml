@@ -1,0 +1,21 @@
+exclude: |
+  (?x)^(
+    public/|
+    site/|
+    build/|
+    resources/_gen/|
+    \.hugo_build\.lock
+  )
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: mixed-line-ending
