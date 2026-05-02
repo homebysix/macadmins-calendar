@@ -1,0 +1,37 @@
+{{/*
+  Partial: event-item.html
+  Renders a single event card. The context (.) is one event entry from data/events.yaml.
+*/}}
+{{ $eventEndDate := .end_date | default .start_date }}
+{{ $eventEndDateTime := printf "%sT23:59:59Z" $eventEndDate }}
+{{ $isUpcoming := ge (time $eventEndDateTime) now }}
+{{ $status := cond $isUpcoming "upcoming" "past" }}
+{{ $statusLabel := cond $isUpcoming "Upcoming" "Past" }}
+{{ $filterText := lower (printf "%s %s %s" .name (.full_name | default "") .location) }}
+<div class="event-item {{ $status }}" data-status="{{ $status }}" data-filter-text="{{ $filterText }}">
+    <div class="event-main">
+        <h3>
+            <a href="{{ .website }}" target="_blank" rel="noopener noreferrer">
+                {{ if .full_name }}{{ .full_name }}{{ else }}{{ .name }}{{ end }}
+                {{ if .full_name }}<br><small>({{ .name }})</small>{{ end }}
+            </a>
+        </h3>
+        <div class="event-meta">
+            <span class="event-date">
+                <span aria-hidden="true">📅</span> {{ dateFormat "January 2" .start_date }}{{ if ne .start_date .end_date }} - {{ dateFormat "January 2, 2006" .end_date }}{{ else }}, {{ dateFormat "2006" .start_date }}{{ end }}
+            </span>
+            <span class="event-location"><span aria-hidden="true">📍</span> {{ .location }}</span>
+            <span class="event-status-badge {{ $status }}">{{ $statusLabel }}</span>
+            <span class="event-type-badge"><span aria-hidden="true">🏷️</span> {{ title .type }}</span>
+        </div>
+        {{ if .language }}
+        {{ $languageName := index site.Data.languages.languages .language | default .language }}
+        <div class="event-language"><span aria-hidden="true">🌐</span> Language: {{ $languageName }}</div>
+        {{ end }}
+    </div>
+    <div class="event-links">
+        <a href="{{ .website }}" target="_blank" rel="noopener noreferrer" class="event-link"><span aria-hidden="true">🌐</span> Website</a>
+        {{ if .videos }}<a href="{{ .videos }}" target="_blank" rel="noopener noreferrer" class="event-link"><span aria-hidden="true">📹</span> Videos</a>{{ end }}
+        {{ if .archive }}<a href="{{ .archive }}" target="_blank" rel="noopener noreferrer" class="event-link"><span aria-hidden="true">📚</span> Archive</a>{{ end }}
+    </div>
+</div>

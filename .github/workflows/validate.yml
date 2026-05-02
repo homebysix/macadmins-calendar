@@ -1,0 +1,26 @@
+name: Validate events.yaml
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "data/events.yaml"
+      - "scripts/validate_events.py"
+      - ".github/workflows/validate.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "data/events.yaml"
+      - "scripts/validate_events.py"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: pip install pyyaml
+      - run: python scripts/validate_events.py

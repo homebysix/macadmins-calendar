@@ -1,0 +1,7 @@
+{{- $s := . -}}
+{{- $s = replace $s "\\" "\\\\" -}}
+{{- $s = replace $s ";" "\\;" -}}
+{{- $s = replace $s "," "\\," -}}
+{{- $s = replace $s "\n" "\\n" -}}
+{{- $s = replace $s "\r" "" -}}
+{{- return $s -}}

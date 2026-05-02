@@ -19,3 +19,13 @@ repos:
       - id: check-merge-conflict
       - id: check-added-large-files
       - id: mixed-line-ending
+
+  - repo: local
+    hooks:
+      - id: validate-events
+        name: Validate events.yaml
+        entry: scripts/validate_events.py
+        language: python
+        additional_dependencies: ["pyyaml"]
+        files: ^(data/events\.yaml|scripts/validate_events\.py)$
+        pass_filenames: false

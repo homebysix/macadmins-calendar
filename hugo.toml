@@ -5,7 +5,7 @@ baseURL = 'http://localhost:1313'
 languageCode = 'en-us'
 title = 'Mac Admin Conferences Calendar'
 theme = 'macadmin-calendar'
-canonifyURLs = true
+disableKinds = ['taxonomy', 'term']
 
 [params]
   description = 'A comprehensive calendar of Mac Admin conferences, meetups, and events worldwide'
@@ -14,6 +14,10 @@ canonifyURLs = true
   highlightHover = '#0056b3'
   highlightLight = '#d4edda'
   highlightText = '#155724'
+  highlightColorDark = '#58a6ff'
+  highlightHoverDark = '#79b8ff'
+  highlightLightDark = '#1f3a2a'
+  highlightTextDark = '#7ee0a4'
 
 [[menu.main]]
   name = 'Events List'
@@ -34,3 +38,15 @@ canonifyURLs = true
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+[mediaTypes."text/calendar"]
+  suffixes = ["ics"]
+
+[outputFormats.ics]
+  mediaType = "text/calendar"
+  baseName = "events"
+  isPlainText = true
+  notAlternative = true
+
+[outputs]
+  home = ["html", "ics"]

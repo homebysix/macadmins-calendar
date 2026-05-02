@@ -1,0 +1,28 @@
+{{- $stamp := now.UTC.Format "20060102T150405Z" -}}
+{{- printf "BEGIN:VCALENDAR\r\n" -}}
+{{- printf "VERSION:2.0\r\n" -}}
+{{- printf "PRODID:-//Mac Admin Conferences Calendar//EN\r\n" -}}
+{{- printf "CALSCALE:GREGORIAN\r\n" -}}
+{{- printf "X-WR-CALNAME:%s\r\n" .Site.Title -}}
+{{- printf "X-WR-CALDESC:%s\r\n" .Site.Params.description -}}
+{{- range .Site.Data.events.events -}}
+  {{- $start := time.AsTime .start_date -}}
+  {{- $end := time.AsTime (.end_date | default .start_date) -}}
+  {{- $dtstart := $start.Format "20060102" -}}
+  {{- $dtend := ($end.AddDate 0 0 1).Format "20060102" -}}
+  {{- $uid := printf "%s-%s@macadmins-calendar" $dtstart (.name | urlize) -}}
+  {{- $summary := partial "ics-escape" (.full_name | default .name) -}}
+  {{- $location := partial "ics-escape" .location -}}
+  {{- $description := partial "ics-escape" (printf "%s — %s" .name .type) -}}
+  {{- printf "BEGIN:VEVENT\r\n" -}}
+  {{- printf "UID:%s\r\n" $uid -}}
+  {{- printf "DTSTAMP:%s\r\n" $stamp -}}
+  {{- printf "DTSTART;VALUE=DATE:%s\r\n" $dtstart -}}
+  {{- printf "DTEND;VALUE=DATE:%s\r\n" $dtend -}}
+  {{- printf "SUMMARY:%s\r\n" $summary -}}
+  {{- printf "DESCRIPTION:%s\r\n" $description -}}
+  {{- printf "LOCATION:%s\r\n" $location -}}
+  {{- with .website -}}{{- printf "URL:%s\r\n" (partial "ics-escape" .) -}}{{- end -}}
+  {{- printf "END:VEVENT\r\n" -}}
+{{- end -}}
+{{- printf "END:VCALENDAR\r\n" -}}

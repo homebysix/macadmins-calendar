@@ -4,9 +4,9 @@
         <h1>{{ .Site.Title }}</h1>
         <p>{{ .Site.Params.description }}</p>
         <div class="quick-nav">
-            <a href="/events/" class="btn btn-primary">View All Events</a>
-            <a href="/calendar/" class="btn btn-primary">View Calendar</a>
-            <a href="/about/" class="btn btn-primary">About This Project</a>
+            <a href="{{ "events/" | relURL }}" class="btn btn-primary">View All Events</a>
+            <a href="{{ "calendar/" | relURL }}" class="btn btn-primary">View Calendar</a>
+            <a href="{{ "about/" | relURL }}" class="btn btn-primary">About This Project</a>
         </div>
     </div>
 
@@ -25,20 +25,76 @@
     {{ end }}
     {{ $sortedUpcoming := sort $upcomingEvents "start_date" "asc" }}
     {{ $sortedPast := sort $pastEvents "start_date" "desc" }}
-    {{ $limitedUpcoming := first 10 $sortedUpcoming }}
+
+    {{/* Split upcoming into "featured" (start date within ~3 months) and "later" (further out) */}}
+    {{ $threeMonthsOut := now.AddDate 0 3 0 }}
+    {{ $featuredUpcoming := slice }}
+    {{ $laterUpcoming := slice }}
+    {{ range $sortedUpcoming }}
+        {{ $eventStart := time .start_date }}
+        {{ if lt $eventStart $threeMonthsOut }}
+            {{ $featuredUpcoming = $featuredUpcoming | append . }}
+        {{ else }}
+            {{ $laterUpcoming = $laterUpcoming | append . }}
+        {{ end }}
+    {{ end }}
     {{ $limitedPast := first 5 $sortedPast }}
 
-    {{ if gt (len $limitedUpcoming) 0 }}
-    {{ partial "event-list.html" (dict "events" $limitedUpcoming "title" "Upcoming Events" "class" "upcoming-section") }}
+    {{ if gt (len $featuredUpcoming) 0 }}
+    <section class="events-section upcoming-section">
+        <h2>Upcoming Events</h2>
+
+        {{/* Collect unique YYYY-MM keys in order so we can group by month */}}
+        {{ $monthKeys := slice }}
+        {{ range $featuredUpcoming }}
+            {{ $key := dateFormat "2006-01" .start_date }}
+            {{ if not (in $monthKeys $key) }}
+                {{ $monthKeys = $monthKeys | append $key }}
+            {{ end }}
+        {{ end }}
+
+        {{ range $monthKey := $monthKeys }}
+            {{ $thisMonth := slice }}
+            {{ range $featuredUpcoming }}
+                {{ if eq (dateFormat "2006-01" .start_date) $monthKey }}
+                    {{ $thisMonth = $thisMonth | append . }}
+                {{ end }}
+            {{ end }}
+            {{ $first := index $thisMonth 0 }}
+            <h3 class="month-header">{{ dateFormat "January 2006" $first.start_date }}</h3>
+            <div class="events-list">
+                {{ range $thisMonth }}
+                    {{ partial "event-item.html" . }}
+                {{ end }}
+            </div>
+        {{ end }}
+    </section>
+    {{ end }}
+
+    {{ if gt (len $laterUpcoming) 0 }}
+    <section class="events-section upcoming-later-section">
+        <h2>Further Out</h2>
+        <ul class="events-compact-list">
+            {{ range $laterUpcoming }}
+                <li class="event-compact">
+                    <a href="{{ .website }}" target="_blank" rel="noopener noreferrer">
+                        <span class="event-compact-date">{{ dateFormat "Jan 2, 2006" .start_date }}</span>
+                        <span class="event-compact-name">{{ if .full_name }}{{ .full_name }}{{ else }}{{ .name }}{{ end }}</span>
+                        <span class="event-compact-location">{{ .location }}</span>
+                    </a>
+                </li>
+            {{ end }}
+        </ul>
+        <p class="view-all-link"><a href="{{ "events/" | relURL }}">View all upcoming events <span aria-hidden="true">→</span></a></p>
+    </section>
     {{ end }}
 
     {{ if gt (len $limitedPast) 0 }}
     {{ partial "event-list.html" (dict "events" $limitedPast "title" "Recent Events" "class" "recent-section") }}
     {{ end }}
 
-
     <div class="view-all-section">
-        <a href="/events/" class="btn btn-primary btn-large">View All Events</a>
+        <a href="{{ "events/" | relURL }}" class="btn btn-primary btn-large">View All Events</a>
     </div>
 </div>
 {{ end }}

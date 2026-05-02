@@ -5,28 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }} | {{ .Site.Title }}</title>
     <meta name="description" content="{{ .Site.Params.description }}">
-    <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
+    <script>
+    (function () {
+        var t;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+            t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
+    <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
     {{ partial "dynamic-css.html" . }}
+    {{ with .Site.Home.OutputFormats.Get "ics" }}
+    <link rel="alternate" type="text/calendar" title="{{ $.Site.Title }} — Calendar feed" href="{{ .RelPermalink }}">
+    {{ end }}
 </head>
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header>
         <nav class="main-nav">
-            <h1><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
-            <ul>
-                {{ range .Site.Menus.main }}
-                <li><a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
-                {{ end }}
-            </ul>
+            <p class="site-title"><a href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a></p>
+            <div class="main-nav-right">
+                <ul>
+                    {{ range .Site.Menus.main }}
+                    <li><a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
+                    {{ end }}
+                </ul>
+                <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" data-theme-toggle>
+                    <span class="theme-toggle-icon theme-toggle-icon-dark" aria-hidden="true">🌙</span>
+                    <span class="theme-toggle-icon theme-toggle-icon-light" aria-hidden="true">☀️</span>
+                </button>
+            </div>
         </nav>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
         {{ block "main" . }}{{ end }}
     </main>
 
     <footer>
         <p>&copy; {{ now.Year }} {{ .Site.Params.author }}. Built with <a href="https://gohugo.io">Hugo</a>.</p>
         <p>Community contributions welcome on <a href="https://github.com/homebysix/macadmins-calendar">GitHub</a>.</p>
+        {{ with .Site.Home.OutputFormats.Get "ics" }}
+        <p>Subscribe via <a href="{{ .RelPermalink }}"><span aria-hidden="true">📅</span> events.ics</a>.</p>
+        {{ end }}
     </footer>
+
+    <script>
+    (function () {
+        var btn = document.querySelector('[data-theme-toggle]');
+        if (!btn) return;
+        var sync = function () {
+            btn.setAttribute('aria-pressed', document.documentElement.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+        };
+        sync();
+        btn.addEventListener('click', function () {
+            var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            sync();
+        });
+    })();
+    </script>
 </body>
 </html>
