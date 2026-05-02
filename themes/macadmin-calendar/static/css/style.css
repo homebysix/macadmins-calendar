@@ -398,6 +398,99 @@ main {
     border-bottom-color: #6c757d;
 }
 
+.upcoming-later-section h2 {
+    border-bottom-color: #6c757d;
+}
+
+/* Month group headers within Upcoming Events */
+.month-header {
+    font-size: 1rem;
+    margin: 1.5rem 0 0.75rem;
+    color: #555;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.month-header:first-of-type {
+    margin-top: 0.5rem;
+}
+
+/* Compact one-line list for events further out */
+.events-compact-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.event-compact + .event-compact {
+    border-top: 1px solid #e9ecef;
+}
+
+.event-compact a {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr auto;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.65rem 1rem;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.15s;
+}
+
+.event-compact a:hover,
+.event-compact a:focus {
+    background: #f8f9fa;
+    text-decoration: none;
+}
+
+.event-compact-date {
+    font-weight: 600;
+    color: #007bff;
+    font-variant-numeric: tabular-nums;
+}
+
+.event-compact-name {
+    font-weight: 500;
+}
+
+.event-compact-location {
+    color: #666;
+    font-size: 0.9em;
+    text-align: right;
+}
+
+.view-all-link {
+    text-align: right;
+    margin-top: 1rem;
+}
+
+.view-all-link a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+}
+
+.view-all-link a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .event-compact a {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .event-compact-location {
+        text-align: left;
+    }
+}
+
 /* Calendar styles */
 .calendar-view {
     background: #fff;
