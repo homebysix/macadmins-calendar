@@ -17,6 +17,9 @@
     </script>
     <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
     {{ partial "dynamic-css.html" . }}
+    {{ with .Site.Home.OutputFormats.Get "ics" }}
+    <link rel="alternate" type="text/calendar" title="{{ $.Site.Title }} — Calendar feed" href="{{ .RelPermalink }}">
+    {{ end }}
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
