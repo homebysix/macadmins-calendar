@@ -44,6 +44,9 @@
     <footer>
         <p>&copy; {{ now.Year }} {{ .Site.Params.author }}. Built with <a href="https://gohugo.io">Hugo</a>.</p>
         <p>Community contributions welcome on <a href="https://github.com/homebysix/macadmins-calendar">GitHub</a>.</p>
+        {{ with .Site.Home.OutputFormats.Get "ics" }}
+        <p>Subscribe via <a href="{{ .RelPermalink }}"><span aria-hidden="true">📅</span> events.ics</a>.</p>
+        {{ end }}
     </footer>
 
     <script>

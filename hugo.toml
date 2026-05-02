@@ -37,3 +37,15 @@ theme = 'macadmin-calendar'
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+[mediaTypes."text/calendar"]
+  suffixes = ["ics"]
+
+[outputFormats.ics]
+  mediaType = "text/calendar"
+  baseName = "events"
+  isPlainText = true
+  notAlternative = true
+
+[outputs]
+  home = ["html", "ics"]

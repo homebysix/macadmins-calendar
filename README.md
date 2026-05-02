@@ -2,6 +2,10 @@
 
 A Hugo-powered static website for tracking Mac Admin conferences, meetups, and events worldwide. This site aims to provide an easy and dynamically updated resource for community members to reference major industry events.
 
+## Subscribe
+
+The site publishes an iCalendar feed at [`/events.ics`](https://homebysix.github.io/macadmins-calendar/events.ics) that can be subscribed to from Apple Calendar, Google Calendar, Outlook, and most other calendar clients. Events update automatically as the feed is regenerated.
+
 ## Development
 
 Requires [Hugo](https://gohugo.io/installation/) (v0.100.0 or later).
