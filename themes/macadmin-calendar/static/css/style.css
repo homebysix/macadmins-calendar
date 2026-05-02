@@ -39,6 +39,8 @@
     --today: #28a745;
     --today-hover: #1e7e34;
 
+    --multi-day-bg: #1e7e34;
+
     --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
     --shadow-elevated: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -76,6 +78,8 @@
     --today: #3fb950;
     --today-hover: #2ea043;
 
+    --multi-day-bg: #1e7e34;
+
     --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.4);
     --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5);
     --shadow-elevated: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -109,14 +113,39 @@ header {
     gap: 1rem;
 }
 
-.main-nav h1 {
+.main-nav .site-title {
     font-size: 1.5rem;
     font-weight: 600;
+    margin: 0;
 }
 
-.main-nav h1 a {
+.main-nav .site-title a {
     text-decoration: none;
     color: var(--text-primary);
+}
+
+/* Skip link — visually hidden until focused */
+.skip-link {
+    position: absolute;
+    top: -100px;
+    left: 0;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: var(--text-on-accent);
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 0 0 6px 0;
+    z-index: 200;
+}
+
+.skip-link:focus {
+    top: 0;
+    outline: 2px solid var(--text-on-accent);
+    outline-offset: -4px;
+}
+
+main:focus {
+    outline: none;
 }
 
 .main-nav-right {
@@ -330,10 +359,6 @@ main {
     gap: 1rem;
 }
 
-.event-item.past {
-    opacity: 0.7;
-}
-
 .event-main {
     flex: 1;
 }
@@ -376,7 +401,8 @@ main {
     color: var(--text-secondary);
 }
 
-.event-type-badge {
+.event-type-badge,
+.event-status-badge {
     display: inline-block;
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
@@ -387,12 +413,12 @@ main {
     color: var(--text-badge-neutral);
 }
 
-.event-type-badge.upcoming {
+.event-status-badge.upcoming {
     background: var(--accent-soft-bg);
     color: var(--accent-soft-text);
 }
 
-.event-type-badge.past {
+.event-status-badge.past {
     background: var(--past-badge-bg);
     color: var(--past-badge-text);
 }
@@ -765,27 +791,38 @@ main {
 }
 
 .calendar-event {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    font-family: inherit;
     background: var(--accent);
     color: var(--text-on-accent);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     margin-bottom: 0.25rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s, transform 0.2s;
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.calendar-event:hover {
+.calendar-event:hover,
+.calendar-event:focus-visible {
     background: var(--accent-hover);
     transform: scale(1.02);
 }
 
+.calendar-event:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
+}
+
 .calendar-event.multi-day {
-    background: var(--today);
+    background: var(--multi-day-bg);
 }
 
 .calendar-event.past {
@@ -930,7 +967,7 @@ footer a:hover {
     }
 
     .calendar-event {
-        font-size: 0.6rem;
+        font-size: 0.75rem;
         padding: 0.2rem 0.3rem;
     }
 

@@ -1,14 +1,14 @@
 {{ define "main" }}
 <div class="calendar-page">
     <h1>{{ .Title }}</h1>
-    <p>{{ .Content }}</p>
+    {{ .Content }}
 
     <div class="calendar-controls">
         <h2 id="currentMonth"></h2>
         <div class="calendar-nav">
-            <button id="prevMonth">&lt; Previous</button>
-            <button id="todayButton" class="today-btn">Today</button>
-            <button id="nextMonth">Next &gt;</button>
+            <button id="prevMonth" type="button" aria-label="Previous month">&lt; Previous</button>
+            <button id="todayButton" type="button" class="today-btn">Today</button>
+            <button id="nextMonth" type="button" aria-label="Next month">Next &gt;</button>
         </div>
     </div>
 
@@ -18,14 +18,13 @@
         </div>
     </div>
 
-    <div class="selected-event-details" id="eventDetails" style="display: none;">
-        <h3>Event Details</h3>
+    <section class="selected-event-details" id="eventDetails" tabindex="-1" aria-labelledby="eventDetailsHeading" style="display: none;">
+        <h3 id="eventDetailsHeading">Event Details</h3>
         <div id="eventContent"></div>
-    </div>
+    </section>
 </div>
 
 <script>
-// Calendar data from Hugo
 const events = [
     {{ range .Site.Data.events.events }}
     {
@@ -62,7 +61,6 @@ function renderCalendar(year, month) {
     const grid = document.getElementById('calendarGrid');
     grid.innerHTML = '';
 
-    // Add day headers
     const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dayHeaders.forEach(day => {
         const header = document.createElement('div');
@@ -71,7 +69,6 @@ function renderCalendar(year, month) {
         grid.appendChild(header);
     });
 
-    // Add calendar days
     const current = new Date(startDate);
     while (current <= lastDay || current.getDay() !== 0) {
         const dayDiv = document.createElement('div');
@@ -85,7 +82,6 @@ function renderCalendar(year, month) {
         dayNumber.textContent = current.getDate();
         dayDiv.appendChild(dayNumber);
 
-        // Add events for this day
         const dayEvents = events.filter(event => {
             const eventStart = new Date(event.start_date + 'T00:00:00');
             const eventEnd = new Date(event.end_date + 'T23:59:59');
@@ -95,21 +91,26 @@ function renderCalendar(year, month) {
         });
 
         dayEvents.forEach(event => {
-            const eventDiv = document.createElement('div');
-            // For status determination, compare end date (inclusive) with today
             const eventEndDate = new Date(event.end_date + 'T23:59:59');
             const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
             const isUpcoming = eventEndDate >= todayStart;
             const status = isUpcoming ? 'upcoming' : 'past';
-            eventDiv.className = `calendar-event ${status}`;
-            eventDiv.textContent = event.name;
-            eventDiv.addEventListener('click', () => showEventDetails(event));
-            dayDiv.appendChild(eventDiv);
+            const eventBtn = document.createElement('button');
+            eventBtn.type = 'button';
+            eventBtn.className = `calendar-event ${status}`;
+            eventBtn.textContent = event.name;
+            eventBtn.setAttribute('aria-label', `${isUpcoming ? 'Upcoming' : 'Past'}: ${event.full_name || event.name}, ${event.location}`);
+            eventBtn.addEventListener('click', () => showEventDetails(event));
+            dayDiv.appendChild(eventBtn);
         });
 
         grid.appendChild(dayDiv);
         current.setDate(current.getDate() + 1);
     }
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function showEventDetails(event) {
@@ -122,26 +123,32 @@ function showEventDetails(event) {
         ? startDate.toLocaleDateString()
         : `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
 
-    const titleContent = event.full_name && event.full_name !== event.name ?
-        `${event.full_name}<br><small>(${event.name})</small>` : event.name;
+    const name = escapeHtml(event.name);
+    const fullName = escapeHtml(event.full_name || event.name);
+    const website = encodeURI(event.website);
+    const videos = event.videos ? encodeURI(event.videos) : '';
+    const archive = event.archive ? encodeURI(event.archive) : '';
+    const titleContent = event.full_name && event.full_name !== event.name
+        ? `${fullName}<br><small>(${name})</small>`
+        : name;
 
     content.innerHTML = `
-        <h4><a href="${event.website}" target="_blank">${titleContent}</a></h4>
-        <p><strong>📅 Date:</strong> ${dateStr}</p>
-        <p><strong>📍 Location:</strong> ${event.location}</p>
-        <p><strong>🏷️ Type:</strong> ${event.type}</p>
+        <h4><a href="${website}" target="_blank" rel="noopener noreferrer">${titleContent}</a></h4>
+        <p><strong><span aria-hidden="true">📅</span> Date:</strong> ${escapeHtml(dateStr)}</p>
+        <p><strong><span aria-hidden="true">📍</span> Location:</strong> ${escapeHtml(event.location)}</p>
+        <p><strong><span aria-hidden="true">🏷️</span> Type:</strong> ${escapeHtml(event.type)}</p>
         <div class="event-actions">
-            <a href="${event.website}" target="_blank" class="btn btn-primary">🌐 Website</a>
-            ${event.videos ? `<a href="${event.videos}" target="_blank" class="btn btn-secondary">📹 Videos</a>` : ''}
-            ${event.archive ? `<a href="${event.archive}" target="_blank" class="btn btn-secondary">📚 Archive</a>` : ''}
+            <a href="${website}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><span aria-hidden="true">🌐</span> Website</a>
+            ${videos ? `<a href="${videos}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><span aria-hidden="true">📹</span> Videos</a>` : ''}
+            ${archive ? `<a href="${archive}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><span aria-hidden="true">📚</span> Archive</a>` : ''}
         </div>
     `;
 
     details.style.display = 'block';
     details.scrollIntoView({ behavior: 'smooth' });
+    details.focus();
 }
 
-// Event listeners
 document.getElementById('prevMonth').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
     renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
@@ -157,7 +164,6 @@ document.getElementById('todayButton').addEventListener('click', () => {
     renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
 });
 
-// Initial render
 renderCalendar(currentDate.getFullYear(), currentDate.getMonth());
 </script>
 

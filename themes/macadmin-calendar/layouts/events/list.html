@@ -1,7 +1,7 @@
 {{ define "main" }}
 <div class="events-page">
     <h1>{{ .Title }}</h1>
-    <p>{{ .Content }}</p>
+    {{ .Content }}
 
     {{ $events := .Site.Data.events.events }}
     {{ $sortedEvents := sort $events "start_date" "desc" }}

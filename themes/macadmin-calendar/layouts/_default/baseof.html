@@ -15,13 +15,14 @@
         document.documentElement.setAttribute('data-theme', t);
     })();
     </script>
-    <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
+    <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
     {{ partial "dynamic-css.html" . }}
 </head>
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
     <header>
         <nav class="main-nav">
-            <h1><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
+            <p class="site-title"><a href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a></p>
             <div class="main-nav-right">
                 <ul>
                     {{ range .Site.Menus.main }}
@@ -36,7 +37,7 @@
         </nav>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
         {{ block "main" . }}{{ end }}
     </main>
 
