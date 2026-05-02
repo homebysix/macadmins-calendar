@@ -489,6 +489,28 @@ main {
     color: var(--text-on-accent);
 }
 
+.event-filter-input {
+    flex: 1;
+    min-width: 12rem;
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--border-subtle);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-radius: 6px;
+    font: inherit;
+}
+
+.event-filter-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.event-filter-empty {
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 1rem 0;
+}
+
 /* Homepage specific styles */
 .page-header {
     text-align: center;

@@ -17,7 +17,9 @@
     <button class="filter-btn active" data-filter="all">All Events</button>
     <button class="filter-btn" data-filter="upcoming">Upcoming</button>
     <button class="filter-btn" data-filter="past">Past</button>
+    <input type="search" id="event-filter" class="event-filter-input" placeholder="Filter by name or location" aria-label="Filter events">
 </div>
+<p class="event-filter-empty" hidden aria-live="polite">No events match your filter.</p>
 {{ end }}
 
 {{ if $title }}

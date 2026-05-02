@@ -7,7 +7,8 @@
 {{ $isUpcoming := ge (time $eventEndDateTime) now }}
 {{ $status := cond $isUpcoming "upcoming" "past" }}
 {{ $statusLabel := cond $isUpcoming "Upcoming" "Past" }}
-<div class="event-item {{ $status }}" data-status="{{ $status }}">
+{{ $filterText := lower (printf "%s %s %s" .name (.full_name | default "") .location) }}
+<div class="event-item {{ $status }}" data-status="{{ $status }}" data-filter-text="{{ $filterText }}">
     <div class="event-main">
         <h3>
             <a href="{{ .website }}" target="_blank" rel="noopener noreferrer">

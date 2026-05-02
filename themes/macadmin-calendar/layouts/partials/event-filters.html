@@ -3,25 +3,37 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filterBtns = document.querySelectorAll('.filter-btn');
     const eventItems = document.querySelectorAll('.event-item');
+    const filterInput = document.getElementById('event-filter');
+    const emptyMessage = document.querySelector('.event-filter-empty');
+    let activeStatus = 'all';
+    let filterQuery = '';
+
+    function applyFilters() {
+        let visibleCount = 0;
+        eventItems.forEach(item => {
+            const statusMatch = activeStatus === 'all' || item.dataset.status === activeStatus;
+            const textMatch = !filterQuery || (item.dataset.filterText || '').includes(filterQuery);
+            const visible = statusMatch && textMatch;
+            item.style.display = visible ? '' : 'none';
+            if (visible) visibleCount++;
+        });
+        if (emptyMessage) emptyMessage.hidden = visibleCount > 0;
+    }
 
     filterBtns.forEach(btn => {
         btn.addEventListener('click', function() {
-            // Remove active class from all buttons
             filterBtns.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             this.classList.add('active');
-
-            const filter = this.dataset.filter;
-
-            // Show/hide events based on filter
-            eventItems.forEach(item => {
-                if (filter === 'all' || item.dataset.status === filter) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            activeStatus = this.dataset.filter;
+            applyFilters();
         });
     });
+
+    if (filterInput) {
+        filterInput.addEventListener('input', function() {
+            filterQuery = this.value.trim().toLowerCase();
+            applyFilters();
+        });
+    }
 });
 </script>
