@@ -1,80 +1,27 @@
+{{/*
+  Partial: dynamic-css.html
+  Emits accent color overrides from hugo.toml [params] for both themes.
+  Other tokens live in static/css/style.css.
+*/}}
+{{ $color := .Site.Params.highlightColor | default "#007bff" }}
+{{ $hover := .Site.Params.highlightHover | default "#0056b3" }}
+{{ $softBg := .Site.Params.highlightLight | default "#d4edda" }}
+{{ $softText := .Site.Params.highlightText | default "#155724" }}
+{{ $colorDark := .Site.Params.highlightColorDark | default "#58a6ff" }}
+{{ $hoverDark := .Site.Params.highlightHoverDark | default "#79b8ff" }}
+{{ $softBgDark := .Site.Params.highlightLightDark | default "#1f3a2a" }}
+{{ $softTextDark := .Site.Params.highlightTextDark | default "#7ee0a4" }}
 <style>
 :root {
-    --highlight-color: {{ .Site.Params.highlightColor | default "#007bff" }};
-    --highlight-hover: {{ .Site.Params.highlightHover | default "#0056b3" }};
-    --highlight-light: {{ .Site.Params.highlightLight | default "#d4edda" }};
-    --highlight-text: {{ .Site.Params.highlightText | default "#155724" }};
+    --accent: {{ $color }};
+    --accent-hover: {{ $hover }};
+    --accent-soft-bg: {{ $softBg }};
+    --accent-soft-text: {{ $softText }};
 }
-
-/* Override static colors with dynamic ones */
-.btn-primary {
-    background: var(--highlight-color);
-}
-
-.btn-primary:hover {
-    background: var(--highlight-hover);
-}
-
-.main-nav a:hover,
-.main-nav a.active {
-    color: var(--highlight-color);
-}
-
-.event-date {
-    color: var(--highlight-color);
-}
-
-.event-main h3 a:hover {
-    color: var(--highlight-color);
-}
-
-.event-card h3 a:hover {
-    color: var(--highlight-color);
-}
-
-.event-link {
-    color: var(--highlight-color);
-}
-
-.archive-link {
-    color: var(--highlight-color);
-}
-
-.footer a {
-    color: var(--highlight-color);
-}
-
-.events-section h2 {
-    border-bottom-color: var(--highlight-color);
-}
-
-.upcoming-section h2 {
-    border-bottom-color: #28a745;
-}
-
-.recent-section h2 {
-    border-bottom-color: #6c757d;
-}
-
-.filter-btn {
-    border-color: var(--highlight-color);
-    color: var(--highlight-color);
-}
-
-.filter-btn.active,
-.filter-btn:hover {
-    background: var(--highlight-color);
-}
-
-.calendar-header {
-    background: var(--highlight-color);
-}
-
-.calendar-event {
-    background: var(--highlight-color);
-}
-
-.calendar-event:hover {
-    background: var(--highlight-hover);
+:root[data-theme="dark"] {
+    --accent: {{ $colorDark }};
+    --accent-hover: {{ $hoverDark }};
+    --accent-soft-bg: {{ $softBgDark }};
+    --accent-soft-text: {{ $softTextDark }};
 }
 </style>

@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ .Title }} | {{ .Site.Title }}</title>
     <meta name="description" content="{{ .Site.Params.description }}">
+    <script>
+    (function () {
+        var t;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+            t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
     <link rel="stylesheet" href="{{ "/css/style.css" | relURL }}">
     {{ partial "dynamic-css.html" . }}
 </head>
@@ -12,11 +22,17 @@
     <header>
         <nav class="main-nav">
             <h1><a href="{{ "/" | relURL }}">{{ .Site.Title }}</a></h1>
-            <ul>
-                {{ range .Site.Menus.main }}
-                <li><a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
-                {{ end }}
-            </ul>
+            <div class="main-nav-right">
+                <ul>
+                    {{ range .Site.Menus.main }}
+                    <li><a href="{{ .URL | relURL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
+                    {{ end }}
+                </ul>
+                <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" data-theme-toggle>
+                    <span class="theme-toggle-icon theme-toggle-icon-dark" aria-hidden="true">🌙</span>
+                    <span class="theme-toggle-icon theme-toggle-icon-light" aria-hidden="true">☀️</span>
+                </button>
+            </div>
         </nav>
     </header>
 
@@ -28,5 +44,22 @@
         <p>&copy; {{ now.Year }} {{ .Site.Params.author }}. Built with <a href="https://gohugo.io">Hugo</a>.</p>
         <p>Community contributions welcome on <a href="https://github.com/homebysix/macadmins-calendar">GitHub</a>.</p>
     </footer>
+
+    <script>
+    (function () {
+        var btn = document.querySelector('[data-theme-toggle]');
+        if (!btn) return;
+        var sync = function () {
+            btn.setAttribute('aria-pressed', document.documentElement.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+        };
+        sync();
+        btn.addEventListener('click', function () {
+            var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            sync();
+        });
+    })();
+    </script>
 </body>
 </html>
